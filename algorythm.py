@@ -127,7 +127,7 @@ def branche_infinie(expression,limits):
             if "limit_f(x)/x_oo" in limits.keys():
                 match str(limits["limit_f(x)/x_oo"]):
                     case "oo" | "-oo":
-                        response.append(f"limite en oo de f(x)/x={limits["limit_f(x)/x_oo"]}\nLa fonction admet une branche parabolique suivant (OY) au voisinage de +oo.")
+                        response.append(f"limite en oo de f(x)/x={limits['limit_f(x)/x_oo']}\nLa fonction admet une branche parabolique suivant (OY) au voisinage de +oo.")
                         print(f"limite en oo de f(x)/x={limits["limit_f(x)/x_oo"]}")
                         print("La fonction admet une branche parabolique suivant (OY) au voisinage de +oo.")
                     case "0":
