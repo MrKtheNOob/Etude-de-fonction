@@ -32,7 +32,7 @@ def generate_html(data):
 # Serve index.html
 @app.get("/limite", response_class=HTMLResponse)
 async def limit_page():
-    file_path = os.path.join("templates", "index.html")
+    file_path = os.path.join("templates", "limit.html")
     with open(file_path, "r") as f:
         content = f.read()
     return HTMLResponse(content=content)
