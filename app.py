@@ -101,7 +101,7 @@ async def étude(fonction: str = Form(...),):
 
 if __name__ == "__main__":
     import uvicorn
-    port= os.environ['VARIABLE_NAME']
+    port= os.environ['PORT']
     if not port:
         port="8080"
     uvicorn.run("app:app", host="0.0.0.0", port=port)
