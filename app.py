@@ -13,6 +13,15 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
+
+def format_expression_for_mathjax(expr):
+    # Convert the SymPy expression to LaTeX format
+    latex_expr = latex(expr)
+    # Replace \log with \ln to ensure natural logarithm representation
+    latex_expr = latex_expr.replace(r'\log', r'\ln')
+    # Return the LaTeX expression wrapped in MathJax delimiters with specified font-size
+    return f"<li style='font-size: 3em;'>\\({latex_expr}\\)</li>"
+
 def generate_html(data):
     html_string = ""
     
@@ -21,39 +30,21 @@ def generate_html(data):
         if isinstance(values, list):
             for value in values:
                 if key == 'expression':
-                    try:
-                        # Sympify the expression and convert to LaTeX
-                        expr = sympify(values)
-                        latex_expr = latex(expr)
-                        html_string += f"  <li style='font-size:3em' >\\({latex_expr}\\)</li>\n"
-                    except (SympifyError, ValueError):
-                        # If the expression can't be sympified, show it as plain text
-                        html_string += f"  <li style='font-size:3em' >\\({values}\\)</li>\n"
-                elif key == 'domaine de définition':
-                    # Format the domain using format_domain
-                    formatted_value = format_domain(value)
-                    html_string += f"  <li>{formatted_value}</li>\n"
-                else:
-                    html_string += f"  <li>{value}</li>\n"
+                    # Format expression values for MathJax
+                    value = format_expression_for_mathjax(sympify(value))
+                elif key == 'domain':
+                    # Format domain values for proper math signs
+                    value = format_domain(sympify(value))
+                html_string += f"  <li>{value}</li>\n"
         else:
             if key == 'expression':
-                try:
-                    # Sympify the expression and convert to LaTeX
-                    expr = sympify(values)
-                    latex_expr = latex(expr)
-                    html_string += f"  <li style='font-size:3em'>\\({latex_expr}\\)</li>\n"
-                except (SympifyError, ValueError):
-                    # If the expression can't be sympified, show it as plain text
-                    html_string += f"  <li style='font-size:3em'>\\({values}\\)</li>\n"
-                
-            elif key == 'domaine de définition':
-                # Format the domain using format_domain
-                formatted_value = format_domain(values)
-                html_string += f"  <li>{formatted_value}</li>\n"
-            else:
-                html_string += f"  <li>{values}</li>\n"
+                # Format expression value for MathJax
+                values = format_expression_for_mathjax(sympify(values))
+            elif key == 'domain':
+                # Format domain value for proper math signs
+                values = format_domain(sympify(values))
+            html_string += f"  <li>{values}</li>\n"
         html_string += "</ul>\n"
-    
     
     return html_string
 @app.get("/limite", response_class=HTMLResponse)
