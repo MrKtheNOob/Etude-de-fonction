@@ -15,23 +15,30 @@
             background-color: #faebd7;
         }
 
-        .up {
+        .up,
+        h1 {
             text-align: center;
         }
-        
+
         main {
             display: flex;
             flex-direction: column;
             gap: 10px;
             align-items: center;
             justify-content: center;
+            opacity: 0;
+        }
+
+        main.htmx-added {
+            opacity: 1;
+            transition: all 1s ease;
         }
     </style>
 </head>
 
 <body>
     <button id="showhelp" style="font-size: 2em;">Aide</button>
-    <div id="help-container"  >
+    <div id="help-container">
         <p id="help">
             fraction \(\frac{numérateur}{dénominateur}\): numérateur / dénominateur
             <br>
@@ -48,18 +55,35 @@
             infini (\(\infty\)) :oo
         </p>
     </div>
+    <h1>Étude de fonction</h1>
     <div class="up">
-        <h1>Étude de fonction</h1>
-        <form hx-post="/calculate/étude" hx-target="main" hx-swap="innerHTML swap:1s">
-            <label for="fonction">
-                <h2>Entrer la fonction</h2><input type="text" placeholder="f(x)" id="finput" name="fonction">
-            </label>
-            <button type="submit">calculer</button>
-        </form>
-    <br><br><br>
-    
-    <main >
-    </main>
+        <div id="will change">
+            <form hx-post="/calculate/étude" hx-target="main" hx-swap="innerHTML swap:1s">
+                <label for="fonction">
+                    <h2>Entrer la fonction</h2><input type="text" placeholder="f(x)" id="finput" name="fonction">
+                </label>
+                <button id="submit-btn" type="submit">calculer</button>
+            </form>
+        </div>
+        <br><br><br>
+
+        <main id="content">
+        </main>
+        <div style="display: none;" id="trigger-div" hx-get="/fetch-content" hx-trigger="click" hx-target="#result">
+            <button id="trigger-button" >Click me to load content</button>
+          </div>
 </body>
+<script>
+    document.body.addEventListener("htmx:beforeSwap",function(){
+        const main=document.querySelector("main")
+        main.innerHTML="<h2>Traitement de la fonction</h2>"
+    })
+    document.body.addEventListener('htmx:afterSwap', function (evt) {
+        if (evt.detail.target.id === 'content') {
+            MathJax.typesetPromise();
+            evt.detail.target.classList.add('htmx-added');
+        }
+    });
+</script>
 
 </html>

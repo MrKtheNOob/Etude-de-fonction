@@ -1,6 +1,6 @@
 
 import sympy
-from sympy import  diff, solve, symbols, S, limit, sympify,oo
+from sympy import  Union, diff, solve, symbols, S, limit, sympify,oo
 from sympy.calculus.util import continuous_domain
 from sympy.sets import Interval
 
@@ -9,6 +9,20 @@ from sympy.sets import Interval
 #the api will take to make the html response
 
 x = symbols('x')
+
+def format_interval(interval):
+    left_bracket = "(" if interval.left_open else "["
+    right_bracket = ")" if interval.right_open else "]"
+    start = "-∞" if interval.start == oo else interval.start
+    end = "∞" if interval.end == oo else interval.end
+    return f"{left_bracket}{start}, {end}{right_bracket}"
+
+def format_domain(domain):
+    if isinstance(domain, Union):
+        intervals = [format_interval(interval) for interval in domain.args]
+        return " ∪ ".join(intervals)
+    else:
+        return format_interval(domain)
 
 def calculate_domain_and_border_limits(expression):
     response = []
@@ -177,8 +191,17 @@ def dérivabilité(expression,domain):
     response.append(f"Dérivée:{f_prime}")
     print(f"Dérivée:{f_prime}")
     return response
-    
 
+
+def print_dict_pretty(d):
+    for key, value in d.items():
+        # Check if the value is a list to handle multi-line values
+        if isinstance(value, list):
+            print(f"{key}:")
+            for item in value:
+                print(f"  - {item}")
+        else:
+            print(f"{key}: {value}")
 #il reste la continuité ,dérivabilité monotonie
 def main(expression):
     full_response={}
@@ -192,7 +215,7 @@ def main(expression):
     full_response["branches infinies"]=bi
     full_response["branches infinies sans oo"]=bi_sans_oo
     full_response["dérivabilité"]=dériv
-    print(full_response)
+    print_dict_pretty(full_response)
     return full_response
 
 if __name__ == "__main__":

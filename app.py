@@ -1,16 +1,17 @@
 from fastapi import FastAPI, Form, HTTPException
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
-from sympy import symbols, limit,diff,sympify,oo,latex,S
+from sympy import symbols, limit,diff,sympify,oo,latex,S,SympifyError
 from sympy.calculus.util import continuous_domain
 from typing import Union
 import os
-from algorythm import main
+from algorythm import main,format_domain
 
 app = FastAPI()
 
 # Mount static directory
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 
 def generate_html(data):
     html_string = ""
@@ -19,17 +20,42 @@ def generate_html(data):
         html_string += f"<h2>{key}</h2>\n<ul>\n"
         if isinstance(values, list):
             for value in values:
-                html_string += f"  <li>{value}</li>\n"
+                if key == 'expression':
+                    try:
+                        # Sympify the expression and convert to LaTeX
+                        expr = sympify(values)
+                        latex_expr = latex(expr)
+                        html_string += f"  <li style='font-size:3em' >\\({latex_expr}\\)</li>\n"
+                    except (SympifyError, ValueError):
+                        # If the expression can't be sympified, show it as plain text
+                        html_string += f"  <li style='font-size:3em' >\\({values}\\)</li>\n"
+                elif key == 'domaine de définition':
+                    # Format the domain using format_domain
+                    formatted_value = format_domain(value)
+                    html_string += f"  <li>{formatted_value}</li>\n"
+                else:
+                    html_string += f"  <li>{value}</li>\n"
         else:
-            # Handle non-list values (like strings)
-            html_string += f"  <li>{values}</li>\n"
+            if key == 'expression':
+                try:
+                    # Sympify the expression and convert to LaTeX
+                    expr = sympify(values)
+                    latex_expr = latex(expr)
+                    html_string += f"  <li style='font-size:3em'>\\({latex_expr}\\)</li>\n"
+                except (SympifyError, ValueError):
+                    # If the expression can't be sympified, show it as plain text
+                    html_string += f"  <li style='font-size:3em'>\\({values}\\)</li>\n"
+                
+            elif key == 'domaine de définition':
+                # Format the domain using format_domain
+                formatted_value = format_domain(values)
+                html_string += f"  <li>{formatted_value}</li>\n"
+            else:
+                html_string += f"  <li>{values}</li>\n"
         html_string += "</ul>\n"
     
+    
     return html_string
-
-# Example
-
-# Serve index.html
 @app.get("/limite", response_class=HTMLResponse)
 async def limit_page():
     file_path = os.path.join("templates", "limit.html")
