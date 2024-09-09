@@ -11,10 +11,7 @@
     <link rel="stylesheet" href="../static/css/styles.css">
     <script src="../static/js/script.js" defer></script>
     <style>
-        body {
-            background-color: #faebd7;
-        }
-
+      
         .up,
         h1 {
             text-align: center;
@@ -42,7 +39,7 @@
         <p id="help">
             fraction \(\frac{numérateur}{dénominateur}\): numérateur / dénominateur
             <br>
-            multiplication (\(\times\)): *
+            multiplication (\(\times\)): * //Faites ça même pour 2x
             <br>
             addition (\(+\)): +
             <br>
@@ -88,12 +85,22 @@
         const main = document.querySelector("main")
         main.innerHTML = "<h2>Traitement de la fonction</h2>"
     })
+    document.querySelector("main").addEventListener('htmx:afterSwap',function(){
+        MathJax.typesetPromise();
+    })
     document.body.addEventListener('htmx:afterSwap', function (evt) {
         if (evt.detail.target.id === 'content') {
             MathJax.typesetPromise();
             evt.detail.target.classList.add('htmx-added');
         }
     });
+    document.body.addEventListener('htmx:responseError', function(event) {
+        const main=document.querySelector("main")
+        const status = event.detail.xhr.status // HTTP status code
+        const statusText = event.detail.xhr.statusText // HTTP status text
+
+        main.innerHTML = `<h2>Erreur ${status}: ${statusText}.</h2>`;
+  });
 </script>
 
 </html>

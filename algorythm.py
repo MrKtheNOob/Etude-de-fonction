@@ -1,30 +1,116 @@
 
+
+import random
+from typing import List
+from urllib import response
 import sympy
-from sympy import  Union, diff, solve, symbols, S, limit, sympify,oo
+from sympy import  N, AccumBounds, Intersection, Union, diff, solve, symbols, S, limit, sympify,oo,simplify
 from sympy.calculus.util import continuous_domain
 from sympy.sets import Interval
 
-#create an array for every function in which they are going to put in the print statements
-#Ill create another array (yes an array of arrays) that is going to be a returned value that 
-#the api will take to make the html response
+
 
 x = symbols('x')
+def calculate_expression_at_random_point(expression,domain)->dict:
+    response={}#dict that is going to be returned
+    if isinstance(domain, Union) or isinstance(domain,Intersection):
+        for interval in domain.args:
+            if interval.left_open:
+                if "-oo" in str(interval.start):
+                    start=-1000
+                else:
+                    start=interval.start+0.000001
+            else:
+                start=interval.start
+            if interval.right_open:
+                if "oo" in str(interval.end):
+                    end=1000
+                else:
+                    end=interval.end-0.000001
+            else:
+                end=interval.end
+            random_point=random.uniform(start,end)
+            response[domain]=expression.subs(x,random_point)
+    else:#the domain is a single interval
+        if domain.left_open:
+            if "-oo" in str(domain.start):
+                start=-1000
+            else:
+                start=domain.start+0.000001
+        else:
+            start=domain.start
+        if domain.right_open:
+            if "oo" in str(domain.end):
+                end=1000
+            else:
+                end=domain.end-0.000001
+        else:
+            end=interval.end
+            
+        random_point=random.uniform(start,end)
+        response[domain]=expression.subs(x,random_point)
+    return response
+def calculate_derivative_image_between_critical_points(derivative, domain, critical_points):
+    response = {}
+    numeric_values=[]    
+    for point in critical_points:
+        numeric_values.append(point.evalf())
+    numeric_values.sort()
 
-def format_interval(interval):
-    left_bracket = "(" if interval.left_open else "["
-    right_bracket = ")" if interval.right_open else "]"
+    
+    # Assume critical_points is already sorted
+    def recurse_interval(interval, numeric_values):
+        # Find critical points within the interval (they're already sorted)
+        critical_in_interval = [p for p in numeric_values if int(interval.start) < p < int(interval.end)]
+
+        if not critical_in_interval:
+            # Base case: No critical points within the interval, evaluate at a random point
+            response.update(calculate_expression_at_random_point(derivative,interval))
+        else:
+            # Slice interval at the critical points and recurse
+            last_point = interval.start
+            for point in critical_in_interval:
+                left_interval = Interval(last_point, point, interval.left_open if last_point == interval.start else True, True)
+                recurse_interval(left_interval, [])  # Recurse on the left part (no need for more critical points)
+                last_point = point
+            # Process the last interval (from last critical point to the interval's end)
+            right_interval = Interval(last_point, interval.end, True, interval.right_open)
+            recurse_interval(right_interval, [])
+
+    if isinstance(domain, Union) or isinstance(domain, Intersection):
+        for interval in domain.args:
+            recurse_interval(interval, critical_points)
+    else:
+        recurse_interval(domain, critical_points)
+
+    return response
+
+def format_interval(interval)-> str:
+    
+    if "Reals" in str(interval):
+        return "R"
+    if interval.left_open:
+        left_bracket = "("  
+    else:
+       left_bracket= "["
+    
+    if interval.right_open:
+        right_bracket = ")" 
+    else:
+        right_bracket="]"
+        
     start = "-∞" if interval.start == oo else interval.start
     end = "∞" if interval.end == oo else interval.end
     return f"{left_bracket}{start}, {end}{right_bracket}"
 
-def format_domain(domain):
+def format_domain(domain)->str:
     if isinstance(domain, Union):
         intervals = [format_interval(interval) for interval in domain.args]
         return " ∪ ".join(intervals)
     else:
         return format_interval(domain)
 
-def calculate_domain_and_border_limits(expression):
+def calculate_domain_and_border_limits(expression)->List:
     response = []
     limits = {}
     print("fonction :", expression)
@@ -43,7 +129,11 @@ def calculate_domain_and_border_limits(expression):
                 response.append(f"limite à gauche en {domain.start} : {limits[f'limit_at_{domain.start}']}")
             elif domain.start == -oo:
                 limits['limit_at_-oo'] = sympy.limit(expr, x, domain.start)
-                response.append(f"limite en -oo : {limits['limit_at_-oo']}")
+                if isinstance(limits['limit_at_-oo'],AccumBounds):
+                    a=limits['limit_at_-oo']
+                    response.append(f"La fonction oscille entre {a.min} et {a.max} mais la limite n'existe pas")
+                else:
+                    response.append(f"limite en -oo : {limits['limit_at_-oo']}")
         else:
             limits['limit_at_left_edge'] = expr.subs(x, domain.start)
             response.append(f"limite en {domain.start} : {limits['limit_at_left_edge']}")
@@ -54,7 +144,11 @@ def calculate_domain_and_border_limits(expression):
                 response.append(f"limite à droite en {domain.end} : {limits[f'limit_at_{domain.end}']}")
             elif domain.end == oo:
                 limits['limit_at_oo'] = sympy.limit(expr, x, domain.end)
-                response.append(f"limite en oo : {limits['limit_at_oo']}")
+                if isinstance(limits['limit_at_oo'],AccumBounds):
+                    a=limits['limit_at_oo']
+                    response.append(f"La fonction oscille entre {a.min} et {a.max} mais la limite n'existe pas")
+                else:
+                    response.append(f"limite en oo : {limits['limit_at_oo']}")
         else:
             limits['limit_at_right_edge'] = expr.subs(x, domain.end)
             response.append(f"limite en {domain.end} : {limits['limit_at_right_edge']}")
@@ -69,6 +163,10 @@ def calculate_domain_and_border_limits(expression):
                     response.append(f"limite à gauche en {interval.start} : {limits[f'limit_at_{interval.start}']}")
                 elif interval.start == -oo:
                     limits['limit_at_-oo'] = sympy.limit(expr, x, interval.start)
+                    if isinstance(limits['limit_at_-oo'],AccumBounds):
+                        a=limits['limit_at_-oo']
+                        response.append(f"La fonction oscille entre {a.min} et {a.max} mais la limite n'existe pas")
+                else:
                     response.append(f"limite en -oo : {limits['limit_at_-oo']}")
             else:
                 limits[f'limit_at_{interval.start}'] = expr.subs(x, interval.start)
@@ -80,6 +178,10 @@ def calculate_domain_and_border_limits(expression):
                     response.append(f"limite à droite en {interval.end} : {limits[f'limit_at_{interval.end}']}")
                 elif interval.end == oo:
                     limits['limit_at_oo'] = sympy.limit(expr, x, interval.end)
+                    if isinstance(limits['limit_at_-oo'],AccumBounds):
+                        a=limits['limit_at_-oo']
+                        response.append(f"La fonction oscille entre {a.min} et {a.max} mais la limite n'existe pas")
+                else:
                     response.append(f"limite en oo : {limits['limit_at_oo']}")
             else:
                 limits[f'limit_at_{interval.end}'] = expr.subs(x, interval.end)
@@ -92,7 +194,7 @@ def is_numeric_string(s):
     try:
         float(s)  # Convert to float to check if it's a numeric value
         return True
-    except ValueError:
+    except :
         return False
 
 
@@ -108,7 +210,7 @@ def branche_infinie_sans_oo(limits):
                 case s if is_numeric_string(s):
                     pass
                 case _:
-                    response.append(f"Pas de branche infinie en {key[9:]}")
+                    response.append(f"None")
     return response
 
 
@@ -166,28 +268,53 @@ def dérivabilité(expression,domain):
 
     # Find the domain of the derivative
     domain_f_prime = continuous_domain(f_prime, x, domain)
-
+   # Find critical points where the derivative is zero if 0 is its domain
+    
+    if domain_f_prime.contains(0):
+        critical_points = solve(f_prime, x)
+        critical_points = [point for point in critical_points if point.is_real]
+        #sympy can sometimes tweak out and return a complex number to an expression that doesn't have complex numbers
+        response.append(f"La fonction admet une tangente horizontale aux points :{critical_points}")
+        print("La fonction admet une tangente horizontale aux points :")
+        for point in critical_points:
+            # Check if the critical point is in the domain
+            if domain_f_prime.contains(point):
+                print(f"   x={point}")
+    else:
+        response.append("0 n'appartient pas au domain de la dérivée donc la fonction n'admet pas de tangente horizontalle")
+        print("0 n'appartient pas au domain de la dérivée donc la fonction n'admet pas de tangente horizontalle")
+        critical_points=[]
     # Check where the function is differentiable and where it's not
     if domain == domain_f_prime:
-        response.append(f"la fonction est dérivable sur l'entiereté du domaine de défnition.")
-        print(f"la fonction est dérivable sur l'entiereté du domaine de défnition.")
-    else:
-        differentiable_region = domain_f_prime
-        response.append(f"la fonction est dérivable sur : {differentiable_region}.")
-        print(f"la fonction est dérivable sur : {differentiable_region}.")
+        response.append(f"La fonction est dérivable sur l'entiereté du domaine de défnition.")
+        print(f"La fonction est dérivable sur l'entiereté du domaine de défintion.")
+        #the sign of the derivative at a random point inside the domain
+        derivative_at_random_point=calculate_derivative_image_between_critical_points(f_prime,domain,critical_points)
+     
+        for k,v in derivative_at_random_point.items():
+        
+            if v>0:
+                response.append(f"La fonction est strictement croissante sur {format_interval(k)}")
+                print(f"La fonction est strictement croissante sur {format_interval(k)}")
+            elif v<0:
+                response.append(f"La fonction est strictement décroissante sur {k}")
+                print(f"La fonction est strictement décroissante sur {k}")
+    else:#the derivative is not differentiable in the function's domain
+        
+        response.append(f"La fonction est dérivable sur : {domain_f_prime}.")
+        print(f"La fonction est dérivable sur : {domain_f_prime}.")
+        derivative_at_random_point=calculate_derivative_image_between_critical_points(f_prime,domain_f_prime,critical_points)
+        for k,v in derivative_at_random_point.items():
+            
+            if v>0:
+                response.append(f"La fonction est strictement croissante sur {format_interval(k)}")
+                print(f"La fonction est strictement croissante sur {format_interval(k)}")
+            elif v<0:
+                response.append(f"La fonction est strictement décroissante sur {format_interval(k)}")
+                print(f"La fonction est strictement décroissante sur {format_interval(k)}")
+        #repetitive code here,gotta make it a helper function
     
-   # Find critical points where the derivative is zero if 0 is its domain
-        if 0 in domain_f_prime:
-            critical_points = solve(f_prime, x)
-            response.append(f"La fonction admet une tangente horizontale aux points :{critical_points}")
-            print("La fonction admet une tangente horizontale aux points :")
-            for point in critical_points:
-                # Check if the critical point is in the domain
-                if point in differentiable_region:
-                    print(f"   x={point}")
-        else:
-            response.append("0 n'appartient pas au domain de la dérivée donc la fonction n'admet pas de tangente horizontalle")
-            print("0 n'appartient pas au domain de la dérivée donc la fonction n'admet pas de tangente horizontalle")
+
     response.append(f"Dérivée:{f_prime}")
     print(f"Dérivée:{f_prime}")
     return response
@@ -202,7 +329,7 @@ def print_dict_pretty(d):
                 print(f"  - {item}")
         else:
             print(f"{key}: {value}")
-#il reste la continuité ,dérivabilité monotonie
+#il reste la continuité monotonie
 def main(expression):
     full_response={}
     limites_aux_bornes,limits,domain=calculate_domain_and_border_limits(expression)
@@ -210,23 +337,28 @@ def main(expression):
     bi_sans_oo=branche_infinie_sans_oo(limits)
     dériv=dérivabilité(expression,domain)
     full_response["expression"]=expression
-    full_response["domain"]=domain
+    full_response["domaine de définition"]=domain
     full_response["limites aux bornes"]=limites_aux_bornes
     full_response["branches infinies"]=bi
-    full_response["branches infinies sans oo"]=bi_sans_oo
+    full_response[r"branches infinies sans \(\infty\)"]=bi_sans_oo
     full_response["dérivabilité"]=dériv
+    #made this so that None appears on the frontend
+    if len(full_response[r"branches infinies sans \(\infty\)"])==0:
+        full_response[r"branches infinies sans \(\infty\)"].append("None")
+    if len(full_response["branches infinies"])==0:
+        full_response["branches infinies"].append("None")
     print_dict_pretty(full_response)
     return full_response
 
 if __name__ == "__main__":
-    main("x**2")
+    main("x**2+sqrt(2*x+5)")
      
     
 
 
 #exercices generaly ask things this way
 #domain
-#edge limits (btw I need to point that out in the print statements)
+#edge limits 
 #infinite branches
 #differentiability (where it is differentiable)
 #the derivative 

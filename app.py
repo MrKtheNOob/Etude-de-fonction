@@ -40,12 +40,12 @@ def generate_html(data):
             if key == 'expression':
                 # Format expression value for MathJax
                 values = format_expression_for_mathjax(sympify(values))
-            elif key == 'domain':
+            elif key == 'domaine de définition':
                 # Format domain value for proper math signs
                 values = format_domain(sympify(values))
             html_string += f"  <li>{values}</li>\n"
         html_string += "</ul>\n"
-    
+  
     return html_string
 @app.get("/limite", response_class=HTMLResponse)
 async def limit_page():
