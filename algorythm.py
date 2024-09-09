@@ -294,24 +294,24 @@ def dérivabilité(expression,domain):
         for k,v in derivative_at_random_point.items():
         
             if v>0:
-                response.append(f"La fonction est strictement croissante sur {format_interval(k)}")
-                print(f"La fonction est strictement croissante sur {format_interval(k)}")
+                response.append(f"La fonction est strictement croissante sur {format_domain(k)}")
+                print(f"La fonction est strictement croissante sur {format_domain(k)}")
             elif v<0:
-                response.append(f"La fonction est strictement décroissante sur {k}")
-                print(f"La fonction est strictement décroissante sur {k}")
+                response.append(f"La fonction est strictement décroissante sur {format_domain(k)}")
+                print(f"La fonction est strictement décroissante sur {format_domain(k)}")
     else:#the derivative is not differentiable in the function's domain
         
-        response.append(f"La fonction est dérivable sur : {domain_f_prime}.")
-        print(f"La fonction est dérivable sur : {domain_f_prime}.")
+        response.append(f"La fonction est dérivable sur : {format_domain(domain_f_prime)}.")
+        print(f"La fonction est dérivable sur : {format_domain(domain_f_prime)}.")
         derivative_at_random_point=calculate_derivative_image_between_critical_points(f_prime,domain_f_prime,critical_points)
         for k,v in derivative_at_random_point.items():
             
             if v>0:
-                response.append(f"La fonction est strictement croissante sur {format_interval(k)}")
-                print(f"La fonction est strictement croissante sur {format_interval(k)}")
+                response.append(f"La fonction est strictement croissante sur {format_domain(k)}")
+                print(f"La fonction est strictement croissante sur {format_domain(k)}")
             elif v<0:
-                response.append(f"La fonction est strictement décroissante sur {format_interval(k)}")
-                print(f"La fonction est strictement décroissante sur {format_interval(k)}")
+                response.append(f"La fonction est strictement décroissante sur {format_domain(k)}")
+                print(f"La fonction est strictement décroissante sur {format_domain(k)}")
         #repetitive code here,gotta make it a helper function
     
 
