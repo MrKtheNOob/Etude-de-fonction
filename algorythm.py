@@ -61,7 +61,7 @@ def calculate_derivative_image_between_critical_points(derivative, domain, criti
     # Assume critical_points is already sorted
     def recurse_interval(interval, numeric_values):
         # Find critical points within the interval (they're already sorted)
-        critical_in_interval = [p for p in numeric_values if int(interval.start) < p < int(interval.end)]
+        critical_in_interval = [p for p in numeric_values if interval.start < p < interval.end]
 
         if not critical_in_interval:
             # Base case: No critical points within the interval, evaluate at a random point

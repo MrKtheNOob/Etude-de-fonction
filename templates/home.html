@@ -50,16 +50,14 @@
             racine carré (\( \sqrt{x} \)): sqrt(expression)
             <br>
             infini (\(\infty\)) :oo
+            <br>
+            expo  (\( e \)) :exp(x)
         </p>
     </div>
     <h1>Étude de fonction</h1>
     <div class="up">
         <p>
-            Ceci la première version du projet avec la majorité des fonctionnalités mise en place
-        </p>
-        <p>
-            Des améliorations ainsi que des mises à jour de la mise en page , du style et des fonctionalité restantes
-            seront bientôt disponibles
+            Résout automatiquement les questions classiques d'étude de fonction
         </p>
         <div id="will change">
             <form hx-post="/calculate/étude" hx-target="main" hx-swap="innerHTML swap:1s">
@@ -93,14 +91,14 @@
             MathJax.typesetPromise();
             evt.detail.target.classList.add('htmx-added');
         }
-    });
+    })
     document.body.addEventListener('htmx:responseError', function(event) {
         const main=document.querySelector("main")
         const status = event.detail.xhr.status // HTTP status code
         const statusText = event.detail.xhr.statusText // HTTP status text
 
-        main.innerHTML = `<h2>Erreur ${status}: ${statusText}.</h2>`;
-  });
+        main.innerHTML = `<h2>Erreur ${status}: ${statusText}</h2>`;
+  })
 </script>
 
 </html>
