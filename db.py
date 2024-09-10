@@ -10,7 +10,7 @@ def connect_to_db():
     host=os.environ["HOST"],
     password=os.environ["PASSWORD"],
     read_timeout=timeout,
-    port=os.environ["POST"],
+    port=os.environ["DB_PORT"],
     user=os.environ["USER"],
     write_timeout=timeout,
     )
