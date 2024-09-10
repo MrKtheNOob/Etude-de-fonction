@@ -6,6 +6,7 @@ from sympy.calculus.util import continuous_domain
 from typing import Union
 import os
 from algorythm import main,format_domain
+from db import insert_feedback
 
 app = FastAPI()
 
@@ -65,6 +66,14 @@ async def home():
     with open(file_path, "r") as f:
         content = f.read()
     return HTMLResponse(content=content)
+@app.post("/feedback",response_class=HTMLResponse)
+async def feedback(answer:str=Form(...),suggestion:str=Form(...)):
+    print(f"FEEDBACK:answer={answer},suggestion={suggestion}")
+    try:
+        insert_feedback(answer,suggestion)
+        return "<h3>Merci pour votre retour 👍🙏</h3>"
+    except:
+        return "<h3>Erreur</h3>"
 # Endpoint to calculate the limit
 @app.post("/calculate/limit", response_class=HTMLResponse)
 async def calculate_limit(fonction: str = Form(...),variable: str = Form(...),target:Union[int,str] = Form(...)):

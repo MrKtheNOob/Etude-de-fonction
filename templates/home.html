@@ -77,6 +77,26 @@
         </div>
         <main id="content">
         </main>
+        <div id="feedback container" style="margin-top: -500px;">
+            <h3>Est ce que vous appreciez l'application ?</h3>
+            <form id="feedback-form" action="/feedback" method="post" target="hidden_iframe">
+                <label for="yesanswer">
+                    Oui
+                    <input type="radio" name="answer" value="yes" required>
+                </label>
+                <label for="noanswer">
+                    Non
+                    <input type="radio" name="answer" value="no" required>
+                </label>
+                <br>
+                <label for="suggestion">
+                    <textarea name="suggestion" value="reason" placeholder="Dites nous ce que vous en pensez"></textarea>
+                </label>
+                <br>
+                <button id="submitbtn" type="submit">Valider avis</button>
+            </form>
+    
+        </div>
 </body>
 <script>
     document.body.addEventListener("htmx:beforeSwap", function () {
