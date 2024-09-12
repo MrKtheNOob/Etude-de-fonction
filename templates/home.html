@@ -11,7 +11,6 @@
     <link rel="stylesheet" href="../static/css/styles.css">
     <script src="../static/js/script.js" defer></script>
     <style>
-      
         .up,
         h1 {
             text-align: center;
@@ -51,7 +50,7 @@
             <br>
             infini (\(\infty\)) :oo
             <br>
-            expo  (\( e \)) :exp(x)
+            expo (\( e \)) :exp(x)
         </p>
     </div>
     <h1>Étude de fonction</h1>
@@ -77,9 +76,9 @@
         </div>
         <main id="content">
         </main>
-        <div id="feedback container" style="margin-top: -500px;">
+        <div id="feedback-container" style="position: absolute; top:10%;right: 34%;">
             <h3>Est ce que vous appreciez l'application ?</h3>
-            <form id="feedback-form" action="/feedback" method="post" target="hidden_iframe">
+            <form id="feedback-form" hx-post="/feedback" hx-target="#feedback-container" hx-swap="innerHTML">
                 <label for="yesanswer">
                     Oui
                     <input type="radio" name="answer" value="yes" required>
@@ -90,12 +89,13 @@
                 </label>
                 <br>
                 <label for="suggestion">
-                    <textarea name="suggestion" value="reason" placeholder="Dites nous ce que vous en pensez"></textarea>
+                    <textarea name="suggestion" value="reason"
+                        placeholder="Dites nous ce que vous en pensez"></textarea>
                 </label>
                 <br>
                 <button id="submitbtn" type="submit">Valider avis</button>
             </form>
-    
+
         </div>
 </body>
 <script>
@@ -103,7 +103,7 @@
         const main = document.querySelector("main")
         main.innerHTML = "<h2>Traitement de la fonction</h2>"
     })
-    document.querySelector("main").addEventListener('htmx:afterSwap',function(){
+    document.querySelector("main").addEventListener('htmx:afterSwap', function () {
         MathJax.typesetPromise();
     })
     document.body.addEventListener('htmx:afterSwap', function (evt) {
@@ -112,13 +112,13 @@
             evt.detail.target.classList.add('htmx-added');
         }
     })
-    document.body.addEventListener('htmx:responseError', function(event) {
-        const main=document.querySelector("main")
+    document.body.addEventListener('htmx:responseError', function (event) {
+        const main = document.querySelector("main")
         const status = event.detail.xhr.status // HTTP status code
         const statusText = event.detail.xhr.statusText // HTTP status text
 
         main.innerHTML = `<h2>Erreur ${status}: ${statusText}</h2>`;
-  })
+    })
 </script>
 
 </html>

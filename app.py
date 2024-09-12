@@ -71,9 +71,9 @@ async def feedback(answer:str=Form(...),suggestion:str=Form(...)):
     print(f"FEEDBACK:answer={answer},suggestion={suggestion}")
     try:
         insert_feedback(answer,suggestion)
-        return HTMLResponse(content="<h3>Merci pour votre retour 👍🙏</h3>")
     except:
         return HTMLResponse(content="<h3>Erreur</h3>")
+    return HTMLResponse(content="<h3>Merci pour votre retour 👍🙏</h3>")
 # Endpoint to calculate the limit
 @app.post("/calculate/limit", response_class=HTMLResponse)
 async def calculate_limit(fonction: str = Form(...),variable: str = Form(...),target:Union[int,str] = Form(...)):
