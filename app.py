@@ -60,7 +60,7 @@ async def derivative_page():
     with open(file_path, "r") as f:
         content = f.read()
     return HTMLResponse(content=content)
-@app.get("/home",response_class=HTMLResponse)
+@app.get("/",response_class=HTMLResponse)
 async def home():
     file_path = os.path.join("templates", "home.html")
     with open(file_path, "r") as f:
