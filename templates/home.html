@@ -24,6 +24,7 @@
             justify-content: center;
             opacity: 0;
         }
+      
 
         main.htmx-added {
             opacity: 1;
@@ -76,7 +77,7 @@
         </div>
         <main id="content">
         </main>
-        <div id="feedback-container" style="position:relative;bottom: 500px;">
+        <div id="feedback-container">
             <h3>Est ce que vous appreciez l'application ?</h3>
             <form id="feedback-form" hx-post="/feedback" hx-target="#feedback-container" hx-swap="innerHTML">
                 <label for="yesanswer">
@@ -99,11 +100,28 @@
         </div>
 </body>
 <script>
+            const box = document.querySelector('#feedback-container');
+        
+        // Get the width of the box
+        const boxWidth = box.offsetWidth;
+
+        // Get the current left position of the box
+        const boxLeft = parseFloat(window.getComputedStyle(box).left);
+
+        // Calculate half of the box's width
+        const halfWidth = boxWidth / 2;
+
+        // Calculate new left position by adding half of the box's width
+        const newLeft = boxLeft - halfWidth;
+
+        // Apply the new left position
+        box.style.left = `${newLeft}px`;
     document.body.addEventListener("htmx:beforeSwap", function () {
         const main = document.querySelector("main")
         main.innerHTML = "<h2>Traitement de la fonction</h2>"
     })
     document.querySelector("main").addEventListener('htmx:afterSwap', function () {
+        
         MathJax.typesetPromise();
     })
     document.body.addEventListener('htmx:afterSwap', function (evt) {
