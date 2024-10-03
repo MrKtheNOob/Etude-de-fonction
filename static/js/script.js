@@ -12,21 +12,6 @@ document.addEventListener("htmx:afterSwap", (event) => {
     }
 });
 
-document.getElementById("finput").addEventListener("input", function() {
-    const mathContent = this.value; // Get the input value
-
-    const outputDiv = document.getElementById("output");
-    outputDiv.innerHTML = mathContent // Set the value inside the div with LaTeX delimiters
-
-    MathJax.typesetPromise([outputDiv]); // Render the MathJax in the div
-});
-// document.addEventListener("click",function(){
-//     alert("body clicked")
-//     if (isShown){
-//         showhelpbtn.click()
-//     }
-// })
-
 // Add the global click listener once, outside the showhelpbtn click handler
 document.addEventListener("click", function(event) {
     if (isShown && !helpParagraph.contains(event.target) && !showhelpbtn.contains(event.target)) {
