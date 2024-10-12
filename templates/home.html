@@ -6,14 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://unpkg.com/htmx.org@1.8.6/dist/htmx.min.js"></script>
     <title>Étude de fonction</title>
-    <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <link rel="icon" href="../static/favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
     <link rel="stylesheet" href="../static/css/styles.css">
     <script src="../static/js/script.js" defer></script>
     <style>
         .up,
         h1 {
             text-align: center;
+        }
+
+        #condition {
+            border: 3px solid black;
+            border-radius: 5px;
+            width: 90px;
+            height: 48px;
         }
 
         main {
@@ -24,7 +31,7 @@
             justify-content: center;
             opacity: 0;
         }
-      
+
 
         main.htmx-added {
             opacity: 1;
@@ -59,22 +66,10 @@
         <p>
             Résout automatiquement les questions classiques d'étude de fonction
         </p>
-        <div id="will change">
-            <form hx-post="/calculate/étude" hx-target="main" hx-swap="innerHTML swap:1s">
-                <label for="fonction">
-                    <h2>Entrer la fonction</h2><input type="text" placeholder="f(x)" style="width: 80%;" id="finput"
-                        name="fonction">
-                </label>
-                <br>
-                <button id="submit-btn" type="submit">calculer</button>
-            </form>
+        <div id="will-change" hx-get="/components/piecewisemenu" hx-trigger="load" hx-swap="innerHTML">
+            <h2>Chargement...</h2>
         </div>
         <br><br><br>
-
-
-        <div style="display: none;" id="trigger-div" hx-get="/fetch-content" hx-trigger="click" hx-target="#result">
-            <button id="trigger-button">Click me to load content</button>
-        </div>
         <main id="content">
         </main>
         <div id="feedback-container">
@@ -100,41 +95,26 @@
         </div>
 </body>
 <script>
-            const box = document.querySelector('#feedback-container');
-        
-        // Get the width of the box
-        const boxWidth = box.offsetWidth;
-
-        // Get the current left position of the box
-        const boxLeft = parseFloat(window.getComputedStyle(box).left);
-
-        // Calculate half of the box's width
-        const halfWidth = boxWidth / 2;
-
-        // Calculate new left position by adding half of the box's width
-        const newLeft = boxLeft - halfWidth;
-
-        // Apply the new left position
-        box.style.left = `${newLeft}px`;
+    const box = document.querySelector('#feedback-container');
+    // Get the width of the box
+    const boxWidth = box.offsetWidth;
+    // Get the current left position of the box
+    const boxLeft = parseFloat(window.getComputedStyle(box).left);
+    // Calculate half of the box's width
+    const halfWidth = boxWidth / 2;
+    // Calculate new left position by adding half of the box's width
+    const newLeft = boxLeft - halfWidth;
+    // Apply the new left position
+    box.style.left = `${newLeft}px`;
     document.body.addEventListener("htmx:beforeSwap", function () {
         const main = document.querySelector("main")
         main.innerHTML = "<h2>Traitement de la fonction</h2>"
     })
-    document.querySelector("main").addEventListener('htmx:afterSwap', function () {
-        
-        MathJax.typesetPromise();
-    })
-    document.body.addEventListener('htmx:afterSwap', function (evt) {
-        if (evt.detail.target.id === 'content') {
-            MathJax.typesetPromise();
-            evt.detail.target.classList.add('htmx-added');
-        }
-    })
+
     document.body.addEventListener('htmx:responseError', function (event) {
         const main = document.querySelector("main")
         const status = event.detail.xhr.status // HTTP status code
         const statusText = event.detail.xhr.statusText // HTTP status text
-
         main.innerHTML = `<h2>Erreur ${status}: ${statusText}</h2>`;
     })
 </script>

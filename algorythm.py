@@ -8,11 +8,10 @@ from sympy import  N, AccumBounds, Intersection, Union, diff, solve, symbols, S,
 from sympy.calculus.util import continuous_domain
 from sympy.sets import Interval
 
-
-
 x = symbols('x')
 def calculate_expression_at_random_point(expression,domain)->dict:
     response={}#dict that is going to be returned
+    print(domain)
     if isinstance(domain, Union) or isinstance(domain,Intersection):
         for interval in domain.args:
             if interval.left_open:
@@ -45,7 +44,7 @@ def calculate_expression_at_random_point(expression,domain)->dict:
             else:
                 end=domain.end-0.000001
         else:
-            end=interval.end
+            end=domain.end
             
         random_point=random.uniform(start,end)
         response[domain]=expression.subs(x,random_point)
@@ -55,9 +54,7 @@ def calculate_derivative_image_between_critical_points(derivative, domain, criti
     numeric_values=[]    
     for point in critical_points:
         numeric_values.append(point.evalf())
-    numeric_values.sort()
-
-    
+    numeric_values.sort()    
     # Assume critical_points is already sorted
     def recurse_interval(interval, numeric_values):
         # Find critical points within the interval (they're already sorted)
@@ -85,8 +82,7 @@ def calculate_derivative_image_between_critical_points(derivative, domain, criti
 
     return response
 
-def format_interval(interval)-> str:
-    
+def format_interval(interval:Interval | sympy.Union)-> str:
     if "Reals" in str(interval):
         return "R"
     if interval.left_open:
@@ -216,7 +212,6 @@ def branche_infinie_sans_oo(limits):
 
 def branche_infinie(expression, limits):
     response = []
-    
     if "limit_at_oo" in limits:
         # Branch at +oo
         if limits["limit_at_oo"] in [oo, -oo]:
@@ -265,16 +260,17 @@ def dérivabilité(expression,domain):
     # Find the domain of the function (excluding points where it is undefined)
     # Compute the derivative
     f_prime = diff(expression, x)
-
     # Find the domain of the derivative
-    domain_f_prime = continuous_domain(f_prime, x, domain)
+    domain_f_prime:Interval = continuous_domain(f_prime, x, domain)
    # Find critical points where the derivative is zero if 0 is its domain
     
     if domain_f_prime.contains(0):
         critical_points = solve(f_prime, x)
-        critical_points = [point for point in critical_points if point.is_real]
         #sympy can sometimes tweak out and return a complex number to an expression that doesn't have complex numbers
-        response.append(f"La fonction admet une tangente horizontale aux points :{critical_points}")
+        critical_points = [point for point in critical_points if point.is_real]
+    
+        if not len(critical_points)==0:
+            response.append(f"La fonction admet une tangente horizontale aux points :{critical_points}")
         print("La fonction admet une tangente horizontale aux points :")
         for point in critical_points:
             # Check if the critical point is in the domain
@@ -300,7 +296,6 @@ def dérivabilité(expression,domain):
                 response.append(f"La fonction est strictement décroissante sur {format_domain(k)}")
                 print(f"La fonction est strictement décroissante sur {format_domain(k)}")
     else:#the derivative is not differentiable in the function's domain
-        
         response.append(f"La fonction est dérivable sur : {format_domain(domain_f_prime)}.")
         print(f"La fonction est dérivable sur : {format_domain(domain_f_prime)}.")
         derivative_at_random_point=calculate_derivative_image_between_critical_points(f_prime,domain_f_prime,critical_points)
@@ -314,13 +309,12 @@ def dérivabilité(expression,domain):
                 print(f"La fonction est strictement décroissante sur {format_domain(k)}")
         #repetitive code here,gotta make it a helper function
     
-
     response.append(f"Dérivée:{f_prime}")
     print(f"Dérivée:{f_prime}")
     return response
 
 
-def print_dict_pretty(d):
+def print_dict_pretty(d)->None:
     for key, value in d.items():
         # Check if the value is a list to handle multi-line values
         if isinstance(value, list):
@@ -330,7 +324,7 @@ def print_dict_pretty(d):
         else:
             print(f"{key}: {value}")
 #il reste la continuité monotonie
-def main(expression):
+def main(expression)->dict:
     full_response={}
     limites_aux_bornes,limits,domain=calculate_domain_and_border_limits(expression)
     bi=branche_infinie(expression,limits)
@@ -343,18 +337,20 @@ def main(expression):
     full_response[r"branches infinies sans \(\infty\)"]=bi_sans_oo
     full_response["dérivabilité"]=dériv
     #made this so that None appears on the frontend
+    format_to_None(full_response)
+    print_dict_pretty(full_response)
+    return full_response
+
+def format_to_None(full_response:dict)->None:
     if len(full_response[r"branches infinies sans \(\infty\)"])==0:
         full_response[r"branches infinies sans \(\infty\)"].append("None")
     if len(full_response["branches infinies"])==0:
         full_response["branches infinies"].append("None")
-    print_dict_pretty(full_response)
-    return full_response
 
 if __name__ == "__main__":
     main("x**2+sqrt(2*x+5)")
      
     
-
 
 #exercices generaly ask things this way
 #domain

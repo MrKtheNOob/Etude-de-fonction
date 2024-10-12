@@ -1,0 +1,12 @@
+<form hx-post="/calculate/étude" hx-target="main" hx-swap="innerHTML swap:1s" id="sfunctionmenu">
+    <h2>Entrer la fonction</h2>
+    <label for="fonction" >
+        <input type="text" placeholder="f(x)" style="width: 80%;font-size: 2.7em;border: 3px solid black;border-radius: 5px;" id="finput"
+            name="fonction" required  >
+    </label>
+    <br>
+    <button style="font-size: large;" hx-get="components/piecewisemenu" hx-target="#will-change">Fonction par morceaux</button>
+    <br>
+    <br>
+    <button style="font-size: large;" id="submit-btn" type="submit">calculer</button>
+</form>

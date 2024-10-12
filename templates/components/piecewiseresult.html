@@ -1,0 +1,83 @@
+<div class="P-result-container">
+	<div id="f1">
+		<h2 style="font-size:3em;">f1(x)</h2>
+		<ul>
+			<li style='font-size: 3em;'>{{expression1}}</li>
+		</ul>
+		<h2>domaine de définition</h2>
+		<ul>
+			<li>{{domaine_de_définition1}}</li>
+		</ul>
+		<h2>limites aux bornes</h2>
+		<ul>
+			{% for i in limites_aux_bornes1 %}
+			<li>{{i}}</li>
+			{% endfor %}
+		</ul>
+		<h2>branches infinies</h2>
+		<ul>
+			{% for i in branches_infinies1 %}
+			<li>{{i}}</li>
+			{% endfor %}
+		</ul>
+		<h2>branches infinies sans \(\infty\)1</h2>
+		<ul>
+			{% for i in bisi1%}
+			<li>{{i}}</li>
+			{% endfor %}
+		</ul>
+		<h2>dérivabilité</h2>
+		<ul>
+			{% for i in dérivabilité1 %}
+			<li>{{i}}</li>
+			{% endfor %}
+		</ul>
+	</div>
+	<div id="f2">
+		<h2 style="font-size:3em;">f2(x)</h2>
+		<ul>
+			<li style='font-size: 3em;'>{{expression2}}</li>
+		</ul>
+		<h2>domaine de définition</h2>
+		<ul>
+			<li>{{domaine_de_définition2}}</li>
+		</ul>
+		<h2>limites aux bornes</h2>
+		<ul>
+			{% for i in limites_aux_bornes2 %}
+			<li>{{i}}</li>
+			{% endfor %}
+		</ul>
+		<h2>branches infinies</h2>
+		<ul>
+			{% for i in branches_infinies2 %}
+			<li>{{i}}</li>
+			{% endfor %}
+		</ul>
+		<h2>branches infinies sans\(\infty\)2</h2>
+		<ul>
+			{% for i in bisi2 %}
+			<li>{{i}}</li>
+			{% endfor %}
+		</ul>
+		<h2>dérivabilité</h2>
+		<ul>
+			{% for i in dérivabilité2 %}
+			<li>{{i}}</li>
+			{% endfor %}
+		</ul>
+	</div>
+</div>
+<div id="CD">
+	<h2>Continuité et dérivabilité au point de raccordement</h2>
+	<ul>
+		{% for i in continuité %}
+		<li>{{i}}</li>
+		{% endfor %}
+	</ul>
+	<ul>
+		{% for i in dériv %}
+		<li>{{i}}</li>
+		{% endfor %}
+	</ul>
+</div>

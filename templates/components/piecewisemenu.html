@@ -1,0 +1,28 @@
+<form hx-post="/calculate/piecewise-étude" id="piecewise-component" hx-target="main" hx-swap="innerHTML swap:1s">
+    <h2>Entrer la fonction</h2>
+    <div class="P-input-containers" >
+        <label for="function1">
+            <input class="function-inputs" type="text" name="function1" placeholder="f1(x)">
+        </label>
+        <div id="cond1">
+            <div class="math-box">
+                <div hx-get="/getinterval?interval-style=[a,b]&function_id=function1" hx-trigger="load from:closest form" hx-target="this" hx-swap="innerHTML swap:1s"></div>
+            </div>            
+        </div>
+    </div>
+    <div class="P-input-containers">
+        <label for="function2">
+            <input class="function-inputs" type="text" name="function2" placeholder="f2(x)">
+        </label>
+        <div id="cond2">
+            <div class="math-box">
+                <div hx-get="/getinterval?interval-style=[a,b]&function_id=function2" hx-trigger="load from:closest form" hx-target="this" hx-swap="innerHTML swap:1s"></div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <button hx-get="/components/singlefunctionmenu" hx-target="#will-change" hx-swap="innerHTML swap:1s" style="font-size: large;">Fonction simple</button>
+    <br>
+    <br>
+    <button id="submit-btn" type="submit">Calculer</button>
+</form>

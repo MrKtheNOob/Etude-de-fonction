@@ -1,16 +1,9 @@
-body{
+body {
     background-color: #faebd7;
     display: flex;
     flex-direction: column;
     align-items: center;
     z-index: 1;
-}
-@media (max-width:500px) {
-    #help-container,.clicked{
-        
-        font-size: medium;
-    }
-  
 }
 
 
@@ -33,12 +26,13 @@ body{
     font-size: 2em;
     position: relative;
     top: 10%;
-    
     z-index: 2;
     background-color: antiquewhite;
 }
-
-.input-container{
+/* #piecewise-component div{
+    border: 1px solid red;
+} */
+.input-container {
     position: relative;
     bottom: 2em;
     display: flex;
@@ -51,18 +45,79 @@ body{
     width: 70%;
     height: 30em;
 }
-.input-container input,input{
-    font-size: 2.7em;
+.P-input-containers{
+    display: flex;
+}
     
+.input-container input,
+.function-inputs {
+    font-size: 2.7em;
     border: 3px solid black;
     border-radius: 5px;
 }
 
-#result{
+#result {
     color: rgb(26, 97, 220);
     font-size: 3em;
 }
 
-#calculatebtn{
+#calculatebtn {
     font-size: 2em;
+}
+
+.math-box {
+    display: flex;
+    align-items: center;
+    border: 1px solid black;
+    padding: 10px;
+    width: fit-content;
+    background-color: #f3f3f3;
+}
+
+.math-box .variable {
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+select,
+#input {
+    font-size: 16px;
+    padding: 5px;
+    margin: 0 5px;
+}
+
+#input {
+    max-width: 60px;
+}
+
+.P-result-container {
+    display: flex;
+    gap: 10px; 
+    width: 100%;
+}
+
+#f1 *,#f2 * {
+    font-size: 100%;
+}
+
+.P-result-container div,#CD {
+    padding: 200px;
+    border: 2px solid black
+}
+
+@media (max-width:500px) {
+    #help-container,
+    .clicked {
+        font-size: medium;
+    }
+    .P-result-container{
+        flex-direction: column;
+    }
+    .P-input-containers{
+        flex-direction: column;
+        align-items: center;
+    }
+    .P-input-containers input{
+        max-width: 350px;
+    }
 }
