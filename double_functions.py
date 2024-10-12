@@ -28,7 +28,7 @@ def defined_interval_edges(interval:Interval,interval_style:str):
             raise ValueError
             
 def get_piecewise_function_info(function1:str,function1_a:int, function1_b:int,function2:str ,function2_a: int, function2_b:int,interval_style1,interval_style2):
-    if "ln" in sympify(function1):
+    if "ln" in str(sympify(function1)):
         function1 = function1.replace("ln", "log") 
     # domain of single functions
         #defining intervals before intersections with the conditions
