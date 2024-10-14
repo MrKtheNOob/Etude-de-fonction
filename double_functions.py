@@ -220,7 +220,7 @@ def double_function_main(function1,function1_a,function1_b,function2,function2_a
     bi_sans_oo=branche_infinie_sans_oo(limits)
     dériv=dérivabilité(expr.args[0][0],domain)
     response1["expression1"]=f"\\({latex(sympify(expr.args[0][0]))}\\)"
-    response1["domaine_de_définition1"]=domain
+    response1["domaine_de_définition1"]=format_domain(domain)
     response1["limites_aux_bornes1"]=limites_aux_bornes
     response1["branches_infinies1"]=bi
     response1["bisi1"]=bi_sans_oo
@@ -234,7 +234,7 @@ def double_function_main(function1,function1_a,function1_b,function2,function2_a
     bi_sans_oo=branche_infinie_sans_oo(limits)
     dériv=dérivabilité(expr.args[1][0],domain)
     response2["expression2"]=f"\\({latex(sympify(expr.args[1][0]))}\\)"
-    response2["domaine_de_définition2"]=domain
+    response2["domaine_de_définition2"]=format_domain(domain)
     response2["limites_aux_bornes2"]=limites_aux_bornes
     response2["branches_infinies2"]=bi
     response2["bisi2"]=bi_sans_oo
