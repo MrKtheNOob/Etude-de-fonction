@@ -61,7 +61,10 @@ async def feedback(answer:str=Form(...),suggestion:str=Form(...)):
 
 @app.post("/calculate/étude",response_class=HTMLResponse)
 async def étude(fonction: str = Form(...)):
-    response_dict=main(expression=fonction)   
+    try:
+        response_dict=main(expression=fonction)   
+    except:
+        return HTMLResponse(content="<h2>Erreur,vérifiez comment vous avez écrit votre fonction</h2>") 
     return HTMLResponse(content=generate_html(response_dict))
 
 @app.post("/calculate/piecewise-étude", response_class=HTMLResponse)
@@ -87,10 +90,12 @@ async def receive_piecewise_data(request:Request,
     print(function2_b)
     print(interval_style1)
     print(interval_style2)
-   
-    data:dict=double_function_main(
-    function1,function1_a,function1_b,function2,function2_a,function2_b,interval_style1,interval_style2
-    )
+    try:
+        data:dict=double_function_main(
+        function1,function1_a,function1_b,function2,function2_a,function2_b,interval_style1,interval_style2
+        )
+    except:
+        return HTMLResponse(content="<h2>Erreur,vérifiez comment vous avez écrit votre fonction</h2>") 
     data.update({"request":request})
     
     return templates.TemplateResponse("/components/piecewiseresult.html",context=data)
