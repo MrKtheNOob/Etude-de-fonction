@@ -17,7 +17,6 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 
-
 def generate_html(data:dict):
     html_string = ""
     for key, values in data.items():
@@ -90,12 +89,9 @@ async def receive_piecewise_data(request:Request,
     print(function2_b)
     print(interval_style1)
     print(interval_style2)
-    try:
-        data:dict=double_function_main(
+    data:dict=double_function_main(
         function1,function1_a,function1_b,function2,function2_a,function2_b,interval_style1,interval_style2
         )
-    except:
-        return HTMLResponse(content="<h2>Erreur,vérifiez comment vous avez écrit votre fonction</h2>") 
     data.update({"request":request})
     
     return templates.TemplateResponse("/components/piecewiseresult.html",context=data)
@@ -103,8 +99,6 @@ async def receive_piecewise_data(request:Request,
 @app.get("/getintervalstyleselector",response_class=HTMLResponse)
 async def get_interval_style_selector(request:Request):
     function_id=request.query_params.get("function_id")
-    if not function_id:
-        return HTMLResponse(content="<h2>Erreur:No function_id provided</h2>")
     content=f"""
     <span class="variable">x</span>
     <span>∈</span>

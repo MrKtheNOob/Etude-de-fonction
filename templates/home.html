@@ -5,13 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://unpkg.com/htmx.org@1.8.6/dist/htmx.min.js"></script>
-    <title>Étude de fonction</title>
+    <title>FuncAnalyzr</title>
     <link rel="icon" href="../static/favicon.ico">
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
     <link rel="stylesheet" href="../static/css/styles.css">
     <script src="../static/js/script.js" defer></script>
     <style>
-        .up,
+        body,
         h1 {
             text-align: center;
         }
@@ -37,11 +37,26 @@
             opacity: 1;
             transition: all 1s ease;
         }
+        nav{
+            display: flex;
+            position: absolute;
+            top: 0;
+            width: 100%; /* optional, sets the nav bar's width to the full viewport width */
+            font-family:Helvetica;
+            border-radius: 5px;
+            justify-content: space-around;
+        }
+        
     </style>
 </head>
 
 <body>
-    <button id="showhelp" style="font-size: 2em;">Aide</button>
+    <nav>
+        <p>
+            Created by <a href="https://www.instagram.com/mr.bndiaye07/">Mr.bndiaye07</a>
+        </p>
+        <button id="showhelp" style="font-size: 2em;">Aide</button>
+    </nav>
     <div id="help-container">
         <p id="help">
             fraction \(\frac{numérateur}{dénominateur}\): numérateur / dénominateur
@@ -59,14 +74,16 @@
             infini (\(\infty\)) :oo
             <br>
             expo (\( e \)) :exp(x)
+            <br>
+            valeur absolule (|x|):Abs(x)
         </p>
     </div>
-    <h1>Étude de fonction</h1>
-    <div class="up">
+    <h1>FuncAnalyzr</h1>
+    
         <p>
             Résout automatiquement les questions classiques d'étude de fonction
         </p>
-        <div id="will-change" hx-get="/components/piecewisemenu" hx-trigger="load" hx-swap="innerHTML">
+        <div id="will-change" hx-get="/components/singlefunctionmenu" hx-trigger="load" hx-swap="innerHTML">
             <h2>Chargement...</h2>
         </div>
         <br><br><br>
@@ -95,6 +112,13 @@
         </div>
 </body>
 <script>
+    document.body.addEventListener('htmx:afterSwap', function (evt) {
+    
+        MathJax.typesetPromise();
+        evt.detail.target.classList.add('htmx-added');
+    
+    })
+
     const box = document.querySelector('#feedback-container');
     // Get the width of the box
     const boxWidth = box.offsetWidth;
@@ -106,9 +130,9 @@
     const newLeft = boxLeft - halfWidth;
     // Apply the new left position
     box.style.left = `${newLeft}px`;
-    document.body.addEventListener("htmx:beforeSwap", function () {
+    document.body.addEventListener("htmx:beforeSwap", function (event) {
         const main = document.querySelector("main")
-        main.innerHTML = "<h2>Traitement de la fonction</h2>"
+        if(event.target.id=="content"){main.innerHTML = "<h2>Traitement de la fonction</h2>"}
     })
 
     document.body.addEventListener('htmx:responseError', function (event) {

@@ -1,12 +1,10 @@
-
-
 import random
 from typing import List
-from urllib import response
 import sympy
-from sympy import  N, AccumBounds, Intersection, Union, diff, solve, symbols, S, limit, sympify,oo,simplify
+from sympy import  Function, AccumBounds, Intersection, Union, diff, latex, solve, symbols, S,sympify,oo
 from sympy.calculus.util import continuous_domain
 from sympy.sets import Interval
+
 
 x = symbols('x')
 def calculate_expression_at_random_point(expression,domain)->dict:
@@ -261,11 +259,19 @@ def dérivabilité(expression,domain):
     # Compute the derivative
     f_prime = diff(expression, x)
     # Find the domain of the derivative
-    domain_f_prime:Interval = continuous_domain(f_prime, x, domain)
+    try:
+        domain_f_prime:Interval = continuous_domain(f_prime, x, domain)
+    except:
+        response.append("Erreur lors du calcul de la dérivée")
+        return response
    # Find critical points where the derivative is zero if 0 is its domain
     
     if domain_f_prime.contains(0):
-        critical_points = solve(f_prime, x)
+        try:
+            critical_points = solve(f_prime, x)
+        except:
+            response.append(f"Impossible de résoudre {f_prime} pour savoir la monotonie de la dérivée")
+            critical_points=[]
         #sympy can sometimes tweak out and return a complex number to an expression that doesn't have complex numbers
         critical_points = [point for point in critical_points if point.is_real]
     
@@ -300,7 +306,6 @@ def dérivabilité(expression,domain):
         print(f"La fonction est dérivable sur : {format_domain(domain_f_prime)}.")
         derivative_at_random_point=calculate_derivative_image_between_critical_points(f_prime,domain_f_prime,critical_points)
         for k,v in derivative_at_random_point.items():
-            
             if v>0:
                 response.append(f"La fonction est strictement croissante sur {format_domain(k)}")
                 print(f"La fonction est strictement croissante sur {format_domain(k)}")
@@ -309,7 +314,7 @@ def dérivabilité(expression,domain):
                 print(f"La fonction est strictement décroissante sur {format_domain(k)}")
         #repetitive code here,gotta make it a helper function
     
-    response.append(f"Dérivée:{f_prime}")
+    response.append(f"Dérivée:\\({latex(sympify(f_prime))}\\)")
     print(f"Dérivée:{f_prime}")
     return response
 
@@ -324,7 +329,7 @@ def print_dict_pretty(d)->None:
         else:
             print(f"{key}: {value}")
 #il reste la continuité monotonie
-def main(expression)->dict:
+def main(expression:str)->dict:
     full_response={}
     limites_aux_bornes,limits,domain=calculate_domain_and_border_limits(expression)
     bi=branche_infinie(expression,limits)

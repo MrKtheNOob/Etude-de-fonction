@@ -2,7 +2,6 @@ const showhelpbtn = document.getElementById("showhelp")
 const helpParagraph = document.getElementById("help-container")
 var isShown = false
 
-// Add event listener to each button
 
 document.addEventListener("htmx:afterSwap", (event) => {
     if (event.target.id === "input-form") {
@@ -18,12 +17,7 @@ document.addEventListener("click", function(event) {
     }
 });
 
-document.body.addEventListener('htmx:afterSwap', function (evt) {
-    if (evt.detail.target.id === 'content'){
-        MathJax.typesetPromise();
-        evt.detail.target.classList.add('htmx-added');
-    }
-})
+
 //logic for the help button
 showhelpbtn.addEventListener("click", function (event) {
     // Prevent this event from bubbling up and triggering the global click listener

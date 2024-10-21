@@ -29,9 +29,7 @@ body {
     z-index: 2;
     background-color: antiquewhite;
 }
-/* #piecewise-component div{
-    border: 1px solid red;
-} */
+
 .input-container {
     position: relative;
     bottom: 2em;
@@ -105,7 +103,7 @@ select,
     border: 2px solid black
 }
 
-@media (max-width:500px) {
+@media (max-width:800px) {
     #help-container,
     .clicked {
         font-size: medium;

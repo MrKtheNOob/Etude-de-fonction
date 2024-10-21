@@ -19,7 +19,9 @@ def connect_to_db():
     return connection
 #made a mistake in creating the db table 
 #thats why the function might not make sense
-def insert_feedback(answer, suggestion):
+def insert_feedback(answer:str, suggestion:str):
+    if len(suggestion)==0:
+        suggestion="None"
     load_dotenv()
     connection = connect_to_db()
     name=answer
