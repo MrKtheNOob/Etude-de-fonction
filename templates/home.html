@@ -102,7 +102,7 @@
                 </label>
                 <br>
                 <label for="suggestion">
-                    <textarea name="suggestion" value="reason"
+                    <textarea id="suggestion-area" name="suggestion" value="reason"
                         placeholder="Dites nous ce que vous en pensez"></textarea>
                 </label>
                 <br>
@@ -112,6 +112,9 @@
         </div>
 </body>
 <script>
+    document.getElementById("feedback-form").addEventListener("submit",function(){
+        document.getElementById("suggestion-area").value+="None"
+    })
     document.body.addEventListener('htmx:afterSwap', function (evt) {
     
         MathJax.typesetPromise();
