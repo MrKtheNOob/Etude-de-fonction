@@ -1,9 +1,10 @@
 from array import array
 from typing import List
-from sympy import AccumBounds, Contains, Intersection, Piecewise, Set, latex, limit, symbols, sympify,S,Union,Interval,oo
+from sympy import AccumBounds, Contains,Intersection, Piecewise,latex, limit,symbols, sympify,S,Union,Interval,oo
 from sympy.calculus.util import continuous_domain
 import sympy
-from algorythm import branche_infinie, branche_infinie_sans_oo,dérivabilité, format_domain, is_numeric_string, print_dict_pretty
+from algorythm import branche_infinie, branche_infinie_sans_oo,dérivabilité, format_domain, is_numeric_string
+
 
 def format_expression_for_mathjax(expr):
     # Convert the SymPy expression to LaTeX format
@@ -28,9 +29,7 @@ def defined_interval_edges(interval:Interval,interval_style:str):
             raise ValueError
             
 def get_piecewise_function_info(function1:str,function1_a:int, function1_b:int,function2:str ,function2_a: int, function2_b:int,interval_style1,interval_style2):
-    if "ln" in str(sympify(function1)):
-        function1 = function1.replace("ln", "log") 
-    # domain of single functions
+    # domain of single functions    
         #defining intervals before intersections with the conditions
     interval1=Interval(function1_a,function1_b)
     defined_interval1=defined_interval_edges(interval1,interval_style1)
@@ -52,10 +51,9 @@ def get_piecewise_function_info(function1:str,function1_a:int, function1_b:int,f
 
     return [piecewise_function,double_function_domain,intersection1,intersection2]
 
-def calculate_domain_and_border_limits2(expression,domain)->List:
+def calculate_domain_and_border_limits2(expr,domain)->List:
     response = []
     limits = {}
-    expr=expression
     
     # Check if the domain is an interval or union of intervals
     if isinstance(domain, Interval):
@@ -115,8 +113,8 @@ def calculate_domain_and_border_limits2(expression,domain)->List:
                     response.append(f"limite à droite en {interval.end} : {limits[f'limit_at_{interval.end}']}")
                 elif interval.end == oo:
                     limits['limit_at_oo'] = sympy.limit(expr, x, interval.end)
-                    if isinstance(limits['limit_at_-oo'],AccumBounds):
-                        a=limits['limit_at_-oo']
+                    if isinstance(limits['limit_at_oo'],AccumBounds):
+                        a=limits['limit_at_oo']
                         response.append(f"La fonction oscille entre {a.min} et {a.max} mais la limite n'existe pas")
                 else:
                     response.append(f"limite en oo : {limits['limit_at_oo']}")
@@ -124,21 +122,21 @@ def calculate_domain_and_border_limits2(expression,domain)->List:
                 limits[f'limit_at_{interval.end}'] = expr.subs(x, interval.end)
                 response.append(f"limite en {interval.end} : {limits[f'limit_at_{interval.end}']}")
     
-    return [response, limits, domain]
+    return [response, limits]
 
-def get_boundary_point(interval1: Set, interval2: Set) -> int | None:
+def get_boundary_point(interval1:Interval|Union, interval2:Interval|Union) -> int | None:
     # Helper function to extract the boundaries from a Set (Interval or Union)
-    def get_boundaries(interval: Set):
+    def get_boundaries(interval:Interval|Union)->list:
         if isinstance(interval, Interval):
             return [interval]
         elif isinstance(interval, Union):
             return [sub_interval for sub_interval in interval.args]
         else:
-            return None
+            raise ValueError
 
     # Get individual intervals (handles Unions and single Intervals)
-    intervals1 = get_boundaries(interval1)
-    intervals2 = get_boundaries(interval2)
+    intervals1:list = get_boundaries(interval1)
+    intervals2:list = get_boundaries(interval2)
 
     # Check each combination of sub-intervals for a shared boundary
     for sub_interval1 in intervals1:
@@ -148,7 +146,7 @@ def get_boundary_point(interval1: Set, interval2: Set) -> int | None:
             if end_first_interval == start_second_interval:
                 return end_first_interval
     return None
-def continuité(expr:Piecewise,boundary_point:int,domain1:Interval,domain2:Interval)->array:
+def continuité(expr:Piecewise,boundary_point:int)->array:
     response=[]
     f1=expr.args[0][0]
     f2=expr.args[1][0]
@@ -173,7 +171,7 @@ def continuité(expr:Piecewise,boundary_point:int,domain1:Interval,domain2:Inter
             response.append("Erreur dans le calcul de la continuité")
     return response
          
-def Piecewise_dérivabilité(expr:Piecewise,boundary_point:int ,domain1:Interval,domain2:Interval)->dict:
+def Piecewise_dérivabilité(expr:Piecewise,boundary_point:int)->dict:
     round(boundary_point,3)
     response=[]
     f1=expr.args[0][0]
@@ -213,28 +211,26 @@ def double_function_main(function1,function1_a,function1_b,function2,function2_a
     for i in response0:
         print(f"{i}\n")
     response1={}
-
-    print(f"----f1(x):{expr.args[0][0]} <=> x ∈ ----")
-    limites_aux_bornes,limits,domain=calculate_domain_and_border_limits2(expr.args[0][0],subdomain1)
+    print(f"----f1(x)={latex(sympify(expr.args[0][0]))} ----")
+    limites_aux_bornes,limits=calculate_domain_and_border_limits2(expr.args[0][0],subdomain1)
     bi=branche_infinie(expr.args[0][0],limits)
     bi_sans_oo=branche_infinie_sans_oo(limits)
-    dériv=dérivabilité(expr.args[0][0],domain)
+    dériv=dérivabilité(expr.args[0][0],subdomain1)
     response1["expression1"]=f"\\({latex(sympify(expr.args[0][0]))}\\)"
-    response1["domaine_de_définition1"]=format_domain(domain)
+    response1["domaine_de_définition1"]=format_domain(subdomain1)
     response1["limites_aux_bornes1"]=limites_aux_bornes
     response1["branches_infinies1"]=bi
     response1["bisi1"]=bi_sans_oo
     response1["dérivabilité1"]=dériv
     print(response1)
-    print("----f2(x)----")
+    print(f"----f2(x)={latex(sympify(expr.args[1][0]))}----")
     response2={}
-    
-    limites_aux_bornes,limits,domain=calculate_domain_and_border_limits2(expr.args[1][0],subdomain2)
+    limites_aux_bornes,limits=calculate_domain_and_border_limits2(expr.args[1][0],subdomain2)
     bi=branche_infinie(expr.args[1][0],limits)
     bi_sans_oo=branche_infinie_sans_oo(limits)
-    dériv=dérivabilité(expr.args[1][0],domain)
+    dériv=dérivabilité(expr.args[1][0],subdomain2)
     response2["expression2"]=f"\\({latex(sympify(expr.args[1][0]))}\\)"
-    response2["domaine_de_définition2"]=format_domain(domain)
+    response2["domaine_de_définition2"]=format_domain(subdomain2)
     response2["limites_aux_bornes2"]=limites_aux_bornes
     response2["branches_infinies2"]=bi
     response2["bisi2"]=bi_sans_oo
@@ -243,11 +239,11 @@ def double_function_main(function1,function1_a,function1_b,function2,function2_a
     print("----Continuité et Dérivabilité de la fonction complete----")
     response3={}
     boundary_point=get_boundary_point(subdomain1,subdomain2)
-    cont=None
-    dériv=None
-    if boundary_point:
-        cont=continuité(expr,boundary_point,subdomain1,subdomain2)
-        dériv=Piecewise_dérivabilité(expr,boundary_point,subdomain1,subdomain2)
+    cont=[]
+    dériv=[]
+    if boundary_point!=None:
+        cont=continuité(expr,boundary_point)
+        dériv=Piecewise_dérivabilité(expr,boundary_point)
     response3["continuité"]=cont
     response3["dériv"]=dériv
     
