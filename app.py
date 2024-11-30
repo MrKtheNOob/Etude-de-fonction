@@ -68,6 +68,7 @@ async def étude(fonction: str = Form(...)):
 
 @app.post("/calculate/piecewise-étude", response_class=HTMLResponse)
 async def receive_piecewise_data(request:Request,
+    as_json:Optional[bool]=None,                                 
     function1: str = Form(...), 
     function1_a: str = Form(...),
     function1_b: str = Form(...),
@@ -93,8 +94,11 @@ async def receive_piecewise_data(request:Request,
         function1,function1_a,function1_b,function2,function2_a,function2_b,interval_style1,interval_style2
         )
     data.update({"request":request})
-    
-    return templates.TemplateResponse("/components/piecewiseresult.html",context=data)
+    if as_json:
+        return JSONResponse(content=data)
+    else:
+        return templates.TemplateResponse("/components/piecewiseresult.html",context=data)
+        
 
 @app.get("/getintervalstyleselector",response_class=HTMLResponse)
 async def get_interval_style_selector(request:Request):
