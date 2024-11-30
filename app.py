@@ -1,7 +1,7 @@
 from typing import Any, Optional
 from fastapi import FastAPI, Form,Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from sympy import oo, sympify,latex
 from fastapi.templating import Jinja2Templates
 import os
@@ -66,7 +66,7 @@ async def étude(fonction: str = Form(...)):
         return HTMLResponse(content="<h2>Erreur,vérifiez comment vous avez écrit votre fonction</h2>") 
     return HTMLResponse(content=generate_html(response_dict))
 
-@app.post("/calculate/piecewise-étude", response_class=HTMLResponse)
+@app.post("/calculate/piecewise-étude")
 async def receive_piecewise_data(request:Request,
     as_json:Optional[bool]=None,                                 
     function1: str = Form(...), 
@@ -209,6 +209,6 @@ if __name__ == "__main__":
     try:
         port= os.environ['PORT']
     except KeyError:
-        port=8080
+        port=80
     uvicorn.run("app:app", host="0.0.0.0", port=port)
     
